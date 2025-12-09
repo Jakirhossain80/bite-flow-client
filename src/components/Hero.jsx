@@ -1,8 +1,10 @@
+// Hero.jsx
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 
 const Hero = () => {
   const { navigate } = useContext(AppContext);
+
   return (
     <section
       className="relative h-[90vh] flex items-center justify-center bg-center bg-cover"
@@ -20,20 +22,21 @@ const Hero = () => {
           Welcome to Our Restaurant
         </h1>
         <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-          {" "}
           Experience the taste of perfection — where every bite tells a story.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button
+            type="button"
             onClick={() => navigate("/menu")}
             className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-black font-semibold px-6 py-3 rounded-full transition-all duration-300"
           >
             All Menus
           </button>
           <button
+            type="button"
             onClick={() => navigate("/book-table")}
-            className="cursor-pointer bg-transparent border-white  hover:bg-white hover:text-black font-semibold px-6 py-3 rounded-full transition-all duration-300"
+            className="cursor-pointer bg-transparent border-white hover:bg-white hover:text-black font-semibold px-6 py-3 rounded-full transition-all duration-300"
           >
             Book a Table
           </button>
@@ -42,4 +45,5 @@ const Hero = () => {
     </section>
   );
 };
+
 export default Hero;

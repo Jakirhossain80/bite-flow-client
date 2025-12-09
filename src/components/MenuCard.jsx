@@ -1,11 +1,21 @@
+// MenuCard.jsx
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { ShoppingCart } from "lucide-react";
+
 const MenuCard = ({ menu }) => {
   const { navigate, addToCart } = useContext(AppContext);
+
+  if (!menu) return null;
+
+  const handleAddToCart = () => {
+    if (!menu.isAvailable) return;
+    addToCart(menu._id);
+  };
+
   return (
-    <div lassName="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
-      {/* Image Section  */}
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
+      {/* Image Section */}
       <div
         onClick={() => navigate(`/menu-details/${menu._id}`)}
         className="relative h-56 overflow-hidden cursor-pointer"
@@ -25,8 +35,8 @@ const MenuCard = ({ menu }) => {
           )}
         </div>
       </div>
-      {/* Content Section */}
 
+      {/* Content Section */}
       <div className="p-5">
         <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">
           {menu.name}
@@ -38,11 +48,14 @@ const MenuCard = ({ menu }) => {
         {/* Price and Add to Cart */}
         <div className="flex items-center justify-between mt-4">
           <div>
-            <p className="text-2xl font-bold text-gray-900">${menu.price}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              ${Number(menu.price).toFixed(2)}
+            </p>
           </div>
 
           <button
-            onClick={() => addToCart(menu._id)}
+            type="button"
+            onClick={handleAddToCart}
             disabled={!menu.isAvailable}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
               menu.isAvailable
@@ -50,7 +63,7 @@ const MenuCard = ({ menu }) => {
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            <ShoppingCart className="w-4 h-4" />{" "}
+            <ShoppingCart className="w-4 h-4" />
             <span className="text-sm">Add</span>
           </button>
         </div>
@@ -58,4 +71,5 @@ const MenuCard = ({ menu }) => {
     </div>
   );
 };
+
 export default MenuCard;

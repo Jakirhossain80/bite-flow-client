@@ -1,9 +1,12 @@
+// Footer.jsx
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <div className="py-16">
       <footer className=" flex flex-wrap justify-center lg:justify-between overflow-hidden gap-10 md:gap-20 py-16 px-6 md:px-16 lg:px-24 xl:px-32 text-[13px] text-gray-500 bg-black">
         <div className="flex flex-wrap items-start gap-10 md:gap-[60px] xl:gap-[140px]">
-          <a href="https://prebuiltui.com">
+          <a href="https://prebuiltui.com" target="_blank" rel="noreferrer">
             <svg
               width="31"
               height="34"
@@ -27,8 +30,8 @@ export default function Footer() {
                   y2="32"
                   gradientUnits="userSpaceOnUse"
                 >
-                  <stop stop-color="#F8FAFC" />
-                  <stop offset="1" stop-color="#383838" />
+                  <stop stopColor="#F8FAFC" />
+                  <stop offset="1" stopColor="#383838" />
                 </linearGradient>
               </defs>
             </svg>
@@ -37,24 +40,24 @@ export default function Footer() {
             <p className="text-slate-100 font-semibold">Product</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/contact" className="hover:text-indigo-600 transition">
                   Support
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/menu" className="hover:text-indigo-600 transition">
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Affiliate
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -62,32 +65,32 @@ export default function Footer() {
             <p className="text-slate-100 font-semibold">Resources</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Company
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Blogs
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Community
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Careers
                   <span className="text-xs text-white bg-indigo-600 rounded-md ml-2 px-2 py-1">
                     We’re hiring!
                   </span>
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   About
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -95,14 +98,14 @@ export default function Footer() {
             <p className="text-slate-100 font-semibold">Legal</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Privacy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/" className="hover:text-indigo-600 transition">
+                <Link to="/" className="hover:text-indigo-600 transition">
                   Terms
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
