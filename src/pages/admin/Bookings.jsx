@@ -1,23 +1,26 @@
+// Bookings.jsx
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
 import { toast } from "react-hot-toast";
+import { AppContext } from "../../context/AppContext";
 
 const Bookings = () => {
   const { admin, axios, loading, setLoading } = useContext(AppContext);
   const [bookings, setBookings] = useState([]);
 
-  const fecthBookings = async () => {
+  const fetchBookings = async () => {
     try {
       const { data } = await axios.get("/api/booking/bookings");
-      console.log("dataa", data);
 
       if (data.success) {
-        setBookings(data.bookings);
+        setBookings(data.bookings || []);
       } else {
-        console.log(data.message);
+        console.log(data.message || "Failed to fetch bookings");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while fetching bookings"
+      );
     }
   };
 
@@ -26,19 +29,20 @@ const Bookings = () => {
       setLoading(true);
       const { data } = await axios.put(
         `/api/booking/update-status/${bookingId}`,
-        {
-          status: newStatus,
-        }
+        { status: newStatus }
       );
 
       if (data.success) {
-        toast.success(data.message);
-        fecthOrders();
+        toast.success(data.message || "Booking status updated");
+        await fetchBookings();
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to update status");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while updating status"
+      );
     } finally {
       setLoading(false);
     }
@@ -46,9 +50,10 @@ const Bookings = () => {
 
   useEffect(() => {
     if (admin) {
-      fecthBookings();
+      fetchBookings();
     }
-  }, []);
+  }, [admin]);
+
   return (
     <div className="py-24 px-3 sm:px-6">
       <h1 className="text-3xl font-bold text-center my-3">All Bookings</h1>
@@ -56,12 +61,13 @@ const Bookings = () => {
         {/* Header */}
         <div className="hidden md:grid grid-cols-6 font-semibold text-gray-700 mb-4">
           <div>Name</div>
-          <div>Name</div>
+          <div>Phone</div>
           <div>Persons</div>
           <div>Date</div>
           <div>Time</div>
           <div>Status</div>
         </div>
+
         {/* Items */}
         <ul className="space-y-4">
           {bookings.map((item) => (
@@ -77,11 +83,13 @@ const Bookings = () => {
                   {item?.numberOfPeople}
                 </p>
                 <p className="text-gray-600 hidden md:block">
-                  {new Date(item?.date).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  {item?.date
+                    ? new Date(item.date).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "N/A"}
                 </p>
                 <p className="text-gray-600 hidden md:block">{item?.time}</p>
                 <div className="flex justify-center md:justify-start items-center gap-2 md:gap-5 mt-2 md:mt-0">
@@ -102,9 +110,16 @@ const Bookings = () => {
               </div>
             </li>
           ))}
+
+          {bookings.length === 0 && (
+            <li className="text-center text-gray-600 py-4">
+              No bookings found.
+            </li>
+          )}
         </ul>
       </div>
     </div>
   );
 };
+
 export default Bookings;

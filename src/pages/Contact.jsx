@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+// Contact.jsx
+import { useContext, useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import { AppContext } from "../context/AppContext";
 
 const Contact = () => {
+  const { user } = useContext(AppContext);
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     phone: "",
     subject: "",
     message: "",
@@ -13,25 +17,29 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
     if (
-      formData.name &&
-      formData.email &&
-      formData.subject &&
-      formData.message
+      formData.name.trim() &&
+      formData.email.trim() &&
+      formData.subject.trim() &&
+      formData.message.trim()
     ) {
+      // Placeholder for future backend integration:
+      // e.g., axios.post("/api/contact", formData)
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
         setFormData({
-          name: "",
-          email: "",
+          name: user?.name || "",
+          email: user?.email || "",
           phone: "",
           subject: "",
           message: "",
@@ -145,7 +153,7 @@ const Contact = () => {
               </div>
             )}
 
-            <div>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
                   Name *
@@ -157,6 +165,7 @@ const Contact = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Your Name"
+                  required
                 />
               </div>
 
@@ -171,6 +180,7 @@ const Contact = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
 
@@ -199,6 +209,7 @@ const Contact = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Reservation, Inquiry, Feedback..."
+                  required
                 />
               </div>
 
@@ -213,17 +224,18 @@ const Contact = () => {
                   rows="5"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Tell us what's on your mind..."
+                  required
                 ></textarea>
               </div>
 
               <button
-                onClick={handleSubmit}
+                type="submit"
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center space-x-2"
               >
                 <Send className="w-5 h-5" />
                 <span>Send Message</span>
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

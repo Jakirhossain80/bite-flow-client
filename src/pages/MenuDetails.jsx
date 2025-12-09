@@ -1,11 +1,13 @@
-import { useContext, useState } from "react";
+// MenuDetails.jsx
+import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { ArrowLeft, CheckCircle, ShoppingCart, XCircle } from "lucide-react";
+
 const MenuDetails = () => {
   const { id } = useParams();
   const { menus, navigate, addToCart } = useContext(AppContext);
-  const [quantity, setQuantity] = useState(1);
+
   const menu = menus.find((item) => item._id === id);
 
   if (!menu) {
@@ -29,6 +31,8 @@ const MenuDetails = () => {
     );
   }
 
+  const totalAmount = Number(menu.price) || 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Back Button */}
@@ -43,7 +47,6 @@ const MenuDetails = () => {
       </div>
 
       {/* Main Content */}
-
       <div className="container mx-auto px-4 pb-16">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Image Section */}
@@ -82,11 +85,12 @@ const MenuDetails = () => {
               </h1>
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold text-yellow-500">
-                  ${menu.price}
+                  ${totalAmount.toFixed(2)}
                 </span>
                 <span className="text-gray-500 text-lg">per item</span>
               </div>
             </div>
+
             {/* Description */}
             <div className="bg-gray-50 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
@@ -96,19 +100,22 @@ const MenuDetails = () => {
                 {menu.description}
               </p>
             </div>
+
             {/* Total and Add to Cart */}
             <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-white text-lg font-semibold">
                   Total Amount
                 </span>
-                <span className="text-white text-3xl font-bold">$20</span>
+                <span className="text-white text-3xl font-bold">
+                  ${totalAmount.toFixed(2)}
+                </span>
               </div>
 
               <button
                 disabled={!menu.isAvailable}
                 onClick={() => addToCart(menu._id)}
-                className={` cursor-pointer w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                className={`cursor-pointer w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
                   menu.isAvailable
                     ? "bg-white text-yellow-600 hover:bg-gray-50 hover:scale-105 active:scale-95 shadow-lg"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -124,4 +131,5 @@ const MenuDetails = () => {
     </div>
   );
 };
+
 export default MenuDetails;

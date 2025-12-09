@@ -1,11 +1,13 @@
+// BookTable.jsx
 import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+
 const BookTable = () => {
-  const { axios, navigate } = useContext(AppContext);
+  const { axios, navigate, user } = useContext(AppContext);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     phone: "",
     numberOfPeople: "",
     date: "",
@@ -14,24 +16,46 @@ const BookTable = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      toast.error("Please login to book a table.");
+      navigate("/login");
+      return;
+    }
+
     try {
-      const { data } = await axios.post("/api/booking/create", formData);
+      const payload = {
+        name: formData.name,
+        phone: formData.phone,
+        numberOfPeople: formData.numberOfPeople,
+        date: formData.date,
+        time: formData.time,
+        note: formData.note,
+        // email is currently not required by the backend booking model,
+        // but can be kept in the form for future use if needed.
+      };
+
+      const { data } = await axios.post("/api/booking/create", payload);
+
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message || "Table booked successfully!");
         navigate("/my-bookings");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to book table.");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong!");
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while booking!"
+      );
     }
   };
+
   return (
     <div className="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-6">
       <h2 className="text-2xl font-semibold text-center mb-6">Book a Table</h2>
@@ -42,7 +66,7 @@ const BookTable = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="You Name"
+            placeholder="Your Name"
             className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-green-500 focus:outline-none"
             required
           />
@@ -53,7 +77,6 @@ const BookTable = () => {
             onChange={handleChange}
             placeholder="Your Email"
             className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-green-500 focus:outline-none"
-            required
           />
         </div>
 
@@ -115,4 +138,5 @@ const BookTable = () => {
     </div>
   );
 };
+
 export default BookTable;

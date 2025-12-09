@@ -1,4 +1,8 @@
+// App.jsx
+import { useContext } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import MenuDetails from "./pages/MenuDetails";
@@ -10,12 +14,11 @@ import MyBookings from "./pages/MyBookings";
 import MyOrders from "./pages/MyOrders";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+
 import Navbar from "./components/Navbar";
-import { Toaster } from "react-hot-toast";
 import Footer from "./components/Footer";
+
 import AdminLayout from "./pages/admin/AdminLayout";
-import { useContext } from "react";
-import { AppContext } from "./context/AppContext";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AddCategory from "./pages/admin/AddCategory";
 import AddMenu from "./pages/admin/AddMenu";
@@ -24,14 +27,21 @@ import Menus from "./pages/admin/Menus";
 import Orders from "./pages/admin/Orders";
 import Bookings from "./pages/admin/Bookings";
 import Dashboard from "./pages/admin/Dashboard";
+
+import { AppContext } from "./context/AppContext";
+
 const App = () => {
-  const adminPath = useLocation().pathname.includes("admin");
+  const location = useLocation();
+  const adminPath = location.pathname.startsWith("/admin");
   const { admin } = useContext(AppContext);
+
   return (
     <div>
       <Toaster />
       {!adminPath && <Navbar />}
+
       <Routes>
+        {/* Public User Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/menu-details/:id" element={<MenuDetails />} />
@@ -44,8 +54,11 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* admin routes  */}
-        <Route path="/admin" element={admin ? <AdminLayout /> : <AdminLogin />}>
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={admin ? <AdminLayout /> : <AdminLogin />}
+        >
           <Route index element={admin ? <Dashboard /> : <AdminLogin />} />
           <Route
             path="add-category"
@@ -67,8 +80,10 @@ const App = () => {
           />
         </Route>
       </Routes>
+
       {!adminPath && <Footer />}
     </div>
   );
 };
+
 export default App;

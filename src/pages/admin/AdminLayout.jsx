@@ -1,3 +1,4 @@
+// AdminLayout.jsx
 import { useContext, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import {
@@ -12,11 +13,13 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
+
 const AdminLayout = () => {
-  const { setAdmin, axios } = useContext(AppContext);
+  const { setAdmin, axios, admin, navigate } = useContext(AppContext);
 
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const menuItems = [
     {
       path: "/admin",
@@ -67,15 +70,20 @@ const AdminLayout = () => {
     try {
       const { data } = await axios.post("/api/auth/logout");
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message || "Logged out successfully");
         setAdmin(null);
+        navigate("/admin");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to logout");
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while logging out"
+      );
     }
   };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Mobile menu button */}
@@ -90,11 +98,9 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <div
-        className={`
-        fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
-        lg:translate-x-0 lg:static lg:inset-0
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      `}
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
@@ -103,7 +109,6 @@ const AdminLayout = () => {
           </div>
 
           {/* Navigation */}
-
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -114,14 +119,11 @@ const AdminLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`
-                    flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                    ${
-                      active
-                        ? "bg-blue-100 text-primary border-r-4 border-primary"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }
-                  `}
+                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    active
+                      ? "bg-blue-100 text-primary border-r-4 border-primary"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
                   <Icon size={20} className="mr-3" />
                   {item.name}
@@ -135,17 +137,23 @@ const AdminLayout = () => {
             <div className="flex items-center text-sm text-gray-500">
               <div className="w-8 h-8 bg-gray-300 rounded-full mr-3"></div>
               <div>
-                <div className="font-medium text-gray-900"> Admin User</div>
-                <div>admin@example.com</div>
+                <div className="font-medium text-gray-900">
+                  {typeof admin === "object" && admin?.name
+                    ? admin.name
+                    : "Admin User"}
+                </div>
+                <div>
+                  {typeof admin === "object" && admin?.email
+                    ? admin.email
+                    : "admin@example.com"}
+                </div>
               </div>
             </div>
           </div>
-          <div />
-          <div />
         </div>
       </div>
-      {/* Mobile overlay */}
 
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -159,8 +167,8 @@ const AdminLayout = () => {
         <header className="bg-white shadow-sm border-b border-gray-200 lg:pl-0 pl-16">
           <div className="flex items-center justify-between px-6 py-4">
             <h2 className="text-2xl font-semibold text-gray-800">
-              {menuItems.find((item) => isActive(item.path, item.exact))
-                ?.name || "Admin Panel"}
+              {menuItems.find((item) => isActive(item.path, item.exact))?.name ||
+                "Admin Panel"}
             </h2>
             <div className="hidden md:flex items-center space-x-4">
               <div className="text-sm text-gray-500">
@@ -185,4 +193,5 @@ const AdminLayout = () => {
     </div>
   );
 };
+
 export default AdminLayout;

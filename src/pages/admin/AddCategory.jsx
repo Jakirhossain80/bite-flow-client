@@ -1,7 +1,9 @@
+// AddCategory.jsx
 import { useContext, useState } from "react";
-import { AppContext } from "../../context/AppContext";
 import { Upload } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { AppContext } from "../../context/AppContext";
+
 const AddCategory = () => {
   const { axios, navigate, loading, setLoading } = useContext(AppContext);
   const [formData, setFormData] = useState({ name: "", image: null });
@@ -13,41 +15,73 @@ const AddCategory = () => {
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
+    const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-    }
-    setFormData({ ...formData, image: selectedFile });
-    if (selectedFile) {
+      setFormData((prev) => ({ ...prev, image: selectedFile }));
       setPreview(URL.createObjectURL(selectedFile));
+    } else {
+      setFile(null);
+      setFormData((prev) => ({ ...prev, image: null }));
+      setPreview(null);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
+
+    if (!file) {
+      toast.error("Please select a category image");
+      return;
+    }
+
     try {
       setLoading(true);
-      const { data } = await axios.post("/api/category/add", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+
+      const payload = new FormData();
+      payload.append("name", formData.name.trim());
+      // Field name must match backend multer config: upload.single("image")
+      payload.append("image", file);
+
+      const { data } = await axios.post("/api/category/add", payload);
+
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message || "Category added successfully");
+        setFormData({ name: "", image: null });
+        setFile(null);
+        setPreview(null);
         navigate("/admin/categories");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to add category");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while adding category"
+      );
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="py-12">
       <form
         onSubmit={handleSubmit}
         className="max-w-md w-full flex flex-col gap-5"
       >
-        {preview && <img src={preview} alt="preview" className="w-1/2" />}
+        {preview && (
+          <img
+            src={preview}
+            alt="preview"
+            className="w-1/2 rounded-lg border border-gray-200"
+          />
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -59,25 +93,26 @@ const AddCategory = () => {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2  focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
             placeholder="Enter category name"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category Image
+            Category Image *
           </label>
           <input
             type="file"
             id="fileUpload"
             className="hidden"
+            accept="image/*"
             onChange={handleFileChange}
-            required
           />
           {/* Custom upload area */}
           <label
             htmlFor="fileUpload"
-            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer  focus:outline-none focus:ring-2 transition"
+            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 transition"
           >
             <Upload className="w-8 h-8 text-gray-500 mb-2" />
             <span className="text-gray-600 text-sm">
@@ -85,11 +120,16 @@ const AddCategory = () => {
             </span>
           </label>
         </div>
-        <button className="bg-orange-500 text-white px-8 py-3 cursor-pointer">
-          {loading ? "adding.." : "add category"}
+
+        <button
+          type="submit"
+          className="bg-orange-500 text-white px-8 py-3 rounded-md hover:bg-orange-600 transition-colors cursor-pointer"
+        >
+          {loading ? "Adding..." : "Add Category"}
         </button>
       </form>
     </div>
   );
 };
+
 export default AddCategory;

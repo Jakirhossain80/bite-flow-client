@@ -1,3 +1,4 @@
+// Home.jsx
 import Categories from "../components/Categories";
 import Hero from "../components/Hero";
 import Menus from "../components/Menus";
@@ -6,13 +7,14 @@ import Testimonial from "../components/Testimonial";
 
 const Home = () => {
   return (
-    <div>
+    <main>
       <Hero />
       <Categories />
       <Menus />
       <NewsLetter />
       <Testimonial />
-    </div>
+    </main>
   );
 };
+
 export default Home;

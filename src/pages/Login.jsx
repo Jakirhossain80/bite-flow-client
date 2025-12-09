@@ -1,41 +1,48 @@
+// Login.jsx
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { LockIcon, MailIcon, User2Icon } from "lucide-react";
+import { LockIcon, MailIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { AppContext } from "../context/AppContext";
+
 const Login = () => {
-  const { navigate, loading, setLoading, axios, setUser } =
+  const { navigate, loading, setLoading, axios, setUser, fetchCartData } =
     useContext(AppContext);
-  // state for input value
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  // handle change input value
   const onChangeHandler = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const { data } = await axios.post("/api/auth/login", formData);
+
       if (data.success) {
-        setUser(true);
-        toast.success(data.message);
+        if (data.user) {
+          setUser(data.user);
+        }
+        toast.success(data.message || "Logged in successfully");
+        await fetchCartData();
         navigate("/");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Login failed");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      const message =
+        error?.response?.data?.message || "Something went wrong during login";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="py-12 flex items-center justify-center">
       <form
@@ -50,7 +57,6 @@ const Login = () => {
         </p>
 
         <div className="flex items-center w-full mt-4 bg-white dark:bg-zinc-800 border border-zinc-300/80 dark:border-zinc-700 h-12 rounded-full overflow-hidden pl-6 gap-2">
-          {/* Mail Icon */}
           <MailIcon className="text-white" />
           <input
             type="email"
@@ -64,7 +70,6 @@ const Login = () => {
         </div>
 
         <div className="flex items-center mt-4 w-full bg-white dark:bg-zinc-800 border border-zinc-300/80 dark:border-zinc-700 h-12 rounded-full overflow-hidden pl-6 gap-2">
-          {/* Lock Icon */}
           <LockIcon className="text-white" />
           <input
             type="password"
@@ -79,13 +84,14 @@ const Login = () => {
 
         <button
           type="submit"
-          className="mt-2 w-full h-11 rounded-full text-white bg-orange-500 hover:opacity-90 transition-opacity cursor-pointer"
+          disabled={loading}
+          className="mt-2 w-full h-11 rounded-full text-white bg-orange-500 hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "Loading..." : "Login"}
         </button>
 
         <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-3 mb-11">
-          Don't have an account?
+          Don't have an account?{" "}
           <Link to={"/signup"} className="text-indigo-500 dark:text-indigo-400">
             Signup
           </Link>
