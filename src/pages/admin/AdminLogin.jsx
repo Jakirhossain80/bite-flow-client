@@ -14,18 +14,40 @@ const AdminLogin = () => {
   });
 
   const onChangeHandler = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const email = formData.email.trim();
+    const password = formData.password;
+
+    if (!email || !password) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+
     try {
       setLoading(true);
-      const { data } = await axios.post("/api/auth/admin/login", formData, {
-        withCredentials: true,
-      });
+
+      // axios here already has baseURL and withCredentials from AppContext
+      const { data } = await axios.post(
+        "/api/auth/admin/login",
+        { email, password },
+        {
+          // Not strictly necessary if axios.defaults.withCredentials = true,
+          // but harmless and explicit:
+          withCredentials: true,
+        }
+      );
 
       if (data.success) {
+        // Save admin info in React state + localStorage
         if (data.admin) {
           localStorage.setItem("admin", JSON.stringify(data.admin));
           setAdmin(data.admin);
@@ -36,9 +58,10 @@ const AdminLogin = () => {
         toast.error(data.message || "Login failed");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Admin login error:", error);
       toast.error(
-        error?.response?.data?.message || "Something went wrong during login"
+        error?.response?.data?.message ||
+          "Something went wrong during login"
       );
     } finally {
       setLoading(false);
@@ -55,7 +78,7 @@ const AdminLogin = () => {
           Login
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 pb-6">
-          Please Login in to continue
+          Please login to continue
         </p>
 
         <div className="flex items-center w-full mt-4 bg-white dark:bg-zinc-800 border border-zinc-300/80 dark:border-zinc-700 h-12 rounded-full overflow-hidden pl-6 gap-2">

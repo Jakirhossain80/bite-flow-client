@@ -52,6 +52,13 @@ const AppContextProvider = ({ children }) => {
     0;
 
   const addToCart = async (menuId) => {
+    // ✅ Require login before calling protected cart API
+    if (!user) {
+      toast.error("Please login to add items to your cart");
+      navigate("/login");
+      return;
+    }
+
     try {
       const { data } = await axios.post("/api/cart/add", {
         menuId,
@@ -65,9 +72,20 @@ const AppContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Add to cart error:", error);
-      toast.error(
-        error?.response?.data?.message || "Something went wrong while adding to cart!"
-      );
+      if (error?.response?.status === 401) {
+        // Session expired or not authorized
+        setUser(null);
+        toast.error(
+          error?.response?.data?.message ||
+            "Your session has expired. Please login again."
+        );
+        navigate("/login");
+      } else {
+        toast.error(
+          error?.response?.data?.message ||
+            "Something went wrong while adding to cart!"
+        );
+      }
     }
   };
 
@@ -113,12 +131,21 @@ const AppContextProvider = ({ children }) => {
     }
   };
 
+  // Initial data load (public + auth check)
   useEffect(() => {
     isAuth();
     fetchCategories();
     fetchMenus();
-    fetchCartData();
   }, []);
+
+  // Fetch cart only when user is authenticated
+  useEffect(() => {
+    if (user) {
+      fetchCartData();
+    } else {
+      setCart([]);
+    }
+  }, [user]);
 
   const value = {
     navigate,

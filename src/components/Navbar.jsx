@@ -103,7 +103,7 @@ const Navbar = () => {
                     <div
                       onMouseEnter={() => setIsProfileOpen(true)}
                       onMouseLeave={() => setIsProfileOpen(false)}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100"
+                      className="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100"
                     >
                       <Link
                         to="/my-bookings"
