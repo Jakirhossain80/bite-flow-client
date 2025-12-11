@@ -5,6 +5,17 @@ import { AppContext } from "../context/AppContext";
 const Categories = () => {
   const { navigate, categories } = useContext(AppContext);
 
+  const handleCategoryClick = (cat) => {
+    if (!cat || !cat.name) {
+      navigate("/menu");
+      return;
+    }
+
+    // Pass the category name as a query param so Menu page can filter
+    const categoryParam = encodeURIComponent(cat.name.trim());
+    navigate(`/menu?category=${categoryParam}`);
+  };
+
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 text-center">
@@ -13,7 +24,7 @@ const Categories = () => {
         </h2>
         <p>Discover delicious dishes from our carefully curated categories</p>
 
-        {(!categories || categories.length === 0) ? (
+        {!categories || categories.length === 0 ? (
           <div className="mt-10 text-gray-500">
             No categories available right now. Please check back later.
           </div>
@@ -23,7 +34,7 @@ const Categories = () => {
               <div
                 key={cat._id}
                 className="cursor-pointer group"
-                onClick={() => navigate("/menu")}
+                onClick={() => handleCategoryClick(cat)}
               >
                 <div className="relative">
                   <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-yellow-400 transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl">

@@ -1,27 +1,50 @@
 // Menu.jsx
 import { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { Search, X } from "lucide-react";
 import MenuCard from "../components/MenuCard";
 
 const Menu = () => {
   const { menus } = useContext(AppContext);
+  const location = useLocation();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMenus, setFilteredMenus] = useState([]);
+
+  // Read ?category=... from /menu?category=Something
+  const searchParams = new URLSearchParams(location.search);
+  const selectedCategory = searchParams.get("category");
 
   useEffect(() => {
     const allMenus = Array.isArray(menus) ? menus : [];
 
-    if (searchQuery.trim() === "") {
-      setFilteredMenus(allMenus);
-    } else {
+    let temp = allMenus;
+
+    // Apply category filter first (if any)
+    if (selectedCategory) {
+      const target = selectedCategory.trim().toLowerCase();
+      temp = temp.filter((menu) => {
+        const catName =
+          typeof menu.category === "string"
+            ? menu.category
+            : menu.category?.name;
+
+        if (!catName) return false;
+        return catName.trim().toLowerCase() === target;
+      });
+    }
+
+    // Apply search filter on top of category filter
+    if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      const filtered = allMenus.filter((menu) =>
+      temp = temp.filter((menu) =>
         menu.name.toLowerCase().includes(query)
       );
-      setFilteredMenus(filtered);
     }
-  }, [searchQuery, menus]);
+
+    setFilteredMenus(temp);
+  }, [menus, searchQuery, selectedCategory]);
 
   const handleClearSearch = () => {
     setSearchQuery("");
@@ -41,6 +64,15 @@ const Menu = () => {
             Explore our delicious selection of handcrafted dishes made with the
             finest ingredients
           </p>
+
+          {selectedCategory && (
+            <p className="mt-2 text-sm text-gray-500">
+              Filtered by category:{" "}
+              <span className="font-semibold text-yellow-600">
+                {selectedCategory}
+              </span>
+            </p>
+          )}
 
           {/* Search Box */}
           <div className="max-w-2xl mx-auto mt-6">
@@ -76,7 +108,29 @@ const Menu = () => {
                   {filteredMenus.length}
                 </span>
                 {filteredMenus.length === 1 ? " result" : " results"} for{" "}
-                <span className="font-semibold">&quot;{searchQuery}&quot;</span>
+                <span className="font-semibold">
+                  &quot;{searchQuery}&quot;
+                </span>
+                {selectedCategory && (
+                  <>
+                    {" "}
+                    in{" "}
+                    <span className="font-semibold text-yellow-600">
+                      {selectedCategory}
+                    </span>
+                  </>
+                )}
+              </>
+            ) : selectedCategory ? (
+              <>
+                Showing{" "}
+                <span className="font-semibold text-yellow-600">
+                  {filteredMenus.length}
+                </span>{" "}
+                {filteredMenus.length === 1 ? "dish" : "dishes"} in{" "}
+                <span className="font-semibold text-yellow-600">
+                  {selectedCategory}
+                </span>
               </>
             ) : (
               <>
@@ -100,15 +154,38 @@ const Menu = () => {
         ) : (
           <div className="text-center">
             <p className="text-gray-600 mb-4">
-              No results found for &quot;{searchQuery}&quot;
+              {searchQuery || selectedCategory ? (
+                <>
+                  No results found
+                  {searchQuery && (
+                    <>
+                      {" "}
+                      for &quot;{searchQuery}&quot;
+                    </>
+                  )}
+                  {selectedCategory && (
+                    <>
+                      {" "}
+                      in{" "}
+                      <span className="font-semibold text-yellow-600">
+                        {selectedCategory}
+                      </span>
+                    </>
+                  )}
+                </>
+              ) : (
+                "No menu items available."
+              )}
             </p>
-            <button
-              type="button"
-              onClick={handleClearSearch}
-              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full font-semibold transition-colors duration-300"
-            >
-              Clear Search
-            </button>
+            {(searchQuery || selectedCategory) && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full font-semibold transition-colors duration-300"
+              >
+                Clear Search
+              </button>
+            )}
           </div>
         )}
       </div>

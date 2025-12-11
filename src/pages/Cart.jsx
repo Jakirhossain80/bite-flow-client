@@ -20,7 +20,8 @@ const Cart = () => {
     } catch (error) {
       console.log(error);
       toast.error(
-        error?.response?.data?.message || "Something went wrong while removing!"
+        error?.response?.data?.message ||
+          "Something went wrong while removing!"
       );
     }
   };
@@ -31,6 +32,10 @@ const Cart = () => {
       navigate("/login");
       return;
     }
+
+    // ✅ Do NOT clear the cart here.
+    // Let the checkout/confirm-order page read the cart
+    // and clear it AFTER the order is placed.
     navigate("/checkout");
   };
 
@@ -97,7 +102,9 @@ const Cart = () => {
                 </td>
                 <td className="py-3 px-4 text-center text-gray-700 font-semibold">
                   $
-                  {Number(item.menuItem.price * item.quantity).toFixed(2)}
+                  {Number(
+                    item.menuItem.price * item.quantity
+                  ).toFixed(2)}
                 </td>
                 <td className="py-3 px-4 text-center text-gray-700 font-semibold">
                   <button
