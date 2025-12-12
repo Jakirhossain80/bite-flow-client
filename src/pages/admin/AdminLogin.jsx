@@ -75,7 +75,7 @@ const AdminLogin = () => {
         className="py-12 w-full sm:w-[350px] text-center border border-zinc-300/60 dark:border-zinc-700 rounded-2xl px-8 bg-white dark:bg-zinc-900"
       >
         <h1 className="text-zinc-900 dark:text-white text-3xl mt-10 font-medium">
-          Login
+          Admin Login
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 pb-6">
           Please login to continue

@@ -1,8 +1,7 @@
-
 // Navbar.jsx
 import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Calendar,
   LogOut,
@@ -19,6 +18,17 @@ const Navbar = () => {
     useContext(AppContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isMobileLoginOpen, setIsMobileLoginOpen] = useState(false);
+  const location = useLocation();
+
+  const getNavLinkClasses = (path) => {
+    const isActive = location.pathname === path;
+    if (isActive) {
+      return "text-blue-600 hover:text-blue-600 transition-colors font-medium";
+    }
+    return "text-gray-700 hover:text-blue-600 transition-colors font-medium";
+  };
 
   const logout = async () => {
     try {
@@ -49,28 +59,19 @@ const Navbar = () => {
 
           {/* Center - Menu Items (Desktop) */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-            >
+            <Link to="/" className={getNavLinkClasses("/")}>
               Home
             </Link>
-            <Link
-              to="/menu"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-            >
+            <Link to="/menu" className={getNavLinkClasses("/menu")}>
               Menus
             </Link>
             <Link
               to="/book-table"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              className={getNavLinkClasses("/book-table")}
             >
               Book Table
             </Link>
-            <Link
-              to="/contact"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-            >
+            <Link to="/contact" className={getNavLinkClasses("/contact")}>
               Contact
             </Link>
           </div>
@@ -131,19 +132,48 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <button
-                  onClick={() => navigate("/login")}
-                  className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium cursor-pointer"
+                <div
+                  className="relative"
+                  onMouseEnter={() => setIsLoginOpen(true)}
+                  onMouseLeave={() => setIsLoginOpen(false)}
                 >
-                  Login
-                </button>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium cursor-pointer"
+                  >
+                    Login
+                  </button>
+                  {isLoginOpen && (
+                    <div className="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100">
+                      <button
+                        onClick={() => {
+                          navigate("/login");
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
+                      >
+                        Normal User Login
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate("/admin");
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
+                      >
+                        Admin Login
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
             {/* Mobile Menu Button */}
             <button
               className="md:hidden ml-1 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => setIsMenuOpen((prev) => !prev)}
+              onClick={() => {
+                setIsMenuOpen((prev) => !prev);
+                setIsMobileLoginOpen(false);
+              }}
               aria-label="Toggle navigation menu"
             >
               {isMenuOpen ? (
@@ -161,29 +191,41 @@ const Navbar = () => {
             <div className="flex flex-col space-y-3">
               <Link
                 to="/"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsMobileLoginOpen(false);
+                }}
+                className={getNavLinkClasses("/")}
               >
                 Home
               </Link>
               <Link
                 to="/menu"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsMobileLoginOpen(false);
+                }}
+                className={getNavLinkClasses("/menu")}
               >
                 Menus
               </Link>
               <Link
                 to="/book-table"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsMobileLoginOpen(false);
+                }}
+                className={getNavLinkClasses("/book-table")}
               >
                 Book Table
               </Link>
               <Link
                 to="/contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsMobileLoginOpen(false);
+                }}
+                className={getNavLinkClasses("/contact")}
               >
                 Contact
               </Link>
@@ -192,7 +234,10 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/my-bookings"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsMobileLoginOpen(false);
+                    }}
                     className="flex items-center text-gray-700 hover:text-blue-600 transition-colors font-medium"
                   >
                     <Calendar size={18} className="mr-3" />
@@ -200,7 +245,10 @@ const Navbar = () => {
                   </Link>
                   <Link
                     to="/my-orders"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsMobileLoginOpen(false);
+                    }}
                     className="flex items-center text-gray-700 hover:text-blue-600 transition-colors font-medium"
                   >
                     <Package size={18} className="mr-3" />
@@ -209,6 +257,7 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
+                      setIsMobileLoginOpen(false);
                       logout();
                     }}
                     className="flex items-center text-red-600 hover:text-red-700 transition-colors font-medium"
@@ -218,15 +267,40 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    navigate("/login");
-                  }}
-                  className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium cursor-pointer w-max"
-                >
-                  Login
-                </button>
+                <div className="flex flex-col space-y-2">
+                  <button
+                    onClick={() =>
+                      setIsMobileLoginOpen((prev) => !prev)
+                    }
+                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium cursor-pointer w-max"
+                  >
+                    Login
+                  </button>
+                  {isMobileLoginOpen && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsMobileLoginOpen(false);
+                          navigate("/login");
+                        }}
+                        className="text-gray-700 hover:text-blue-600 transition-colors font-medium w-max"
+                      >
+                        Normal User Login
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsMobileLoginOpen(false);
+                          navigate("/admin");
+                        }}
+                        className="text-gray-700 hover:text-blue-600 transition-colors font-medium w-max"
+                      >
+                        Admin Login
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>

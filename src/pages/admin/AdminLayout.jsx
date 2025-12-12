@@ -72,7 +72,7 @@ const AdminLayout = () => {
       if (data.success) {
         toast.success(data.message || "Logged out successfully");
         setAdmin(null);
-        navigate("/admin");
+        navigate("/");
       } else {
         toast.error(data.message || "Failed to logout");
       }
