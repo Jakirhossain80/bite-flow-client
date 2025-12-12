@@ -18,7 +18,7 @@ const Categories = () => {
 
   const hasCategories = Array.isArray(categories) && categories.length > 0;
 
-  const ITEMS_PER_PAGE = 8;
+  const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalItems = hasCategories ? categories.length : 0;
