@@ -33,7 +33,19 @@ import { AppContext } from "./context/AppContext";
 const App = () => {
   const location = useLocation();
   const adminPath = location.pathname.startsWith("/admin");
-  const { admin } = useContext(AppContext);
+  const { admin, authChecking } = useContext(AppContext);
+
+  // ✅ Prevent AdminLogin "flash" while checking session on refresh
+  if (adminPath && authChecking) {
+    return (
+      <div>
+        <Toaster />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-gray-600 text-sm">Checking session...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

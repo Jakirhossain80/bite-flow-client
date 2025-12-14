@@ -11,9 +11,15 @@ axios.defaults.withCredentials = true;
 
 const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
+
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(null);
+
+  // ✅ NEW: prevents "AdminLogin flash" on refresh
+  const [authChecking, setAuthChecking] = useState(true);
+
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
 
@@ -23,11 +29,8 @@ const AppContextProvider = ({ children }) => {
   const fetchCartData = async () => {
     try {
       const { data } = await axios.get("/api/cart/get");
-      if (data.success) {
-        setCart(data.cart);
-      } else {
-        setCart([]);
-      }
+      if (data.success) setCart(data.cart);
+      else setCart([]);
     } catch (error) {
       console.log("Error fetching cart:", error);
       setCart([]);
@@ -52,7 +55,6 @@ const AppContextProvider = ({ children }) => {
     0;
 
   const addToCart = async (menuId) => {
-    // ✅ Require login before calling protected cart API
     if (!user) {
       toast.error("Please login to add items to your cart");
       navigate("/login");
@@ -64,6 +66,7 @@ const AppContextProvider = ({ children }) => {
         menuId,
         quantity: 1,
       });
+
       if (data.success) {
         toast.success(data.message);
         fetchCartData();
@@ -72,8 +75,8 @@ const AppContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Add to cart error:", error);
+
       if (error?.response?.status === 401) {
-        // Session expired or not authorized
         setUser(null);
         toast.error(
           error?.response?.data?.message ||
@@ -92,12 +95,8 @@ const AppContextProvider = ({ children }) => {
   const fetchCategories = async () => {
     try {
       const { data } = await axios.get("/api/category/all");
-
-      if (data.success) {
-        setCategories(data.categories);
-      } else {
-        console.log("Failed to fetch categories");
-      }
+      if (data.success) setCategories(data.categories);
+      else console.log("Failed to fetch categories");
     } catch (error) {
       console.log("Error fetching categories:", error);
     }
@@ -106,12 +105,8 @@ const AppContextProvider = ({ children }) => {
   const fetchMenus = async () => {
     try {
       const { data } = await axios.get("/api/menu/all");
-
-      if (data.success) {
-        setMenus(data.menuItems);
-      } else {
-        console.log("Failed to fetch menus");
-      }
+      if (data.success) setMenus(data.menuItems);
+      else console.log("Failed to fetch menus");
     } catch (error) {
       console.log("Error fetching menus:", error);
     }
@@ -120,48 +115,71 @@ const AppContextProvider = ({ children }) => {
   const isAuth = async () => {
     try {
       const { data } = await axios.get("/api/auth/is-auth");
-      if (data.success) {
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
+      if (data.success) setUser(data.user);
+      else setUser(null);
     } catch (error) {
       console.log("Auth check error:", error);
       setUser(null);
     }
   };
 
-  // Initial data load (public + auth check)
+  // ✅ Admin auth restore
+  const isAdminAuth = async () => {
+    try {
+      const { data } = await axios.get("/api/auth/is-admin-auth");
+      if (data.success) setAdmin(data.admin);
+      else setAdmin(null);
+    } catch (error) {
+      setAdmin(null);
+    }
+  };
+
+  // ✅ Run auth checks first; then unlock rendering
   useEffect(() => {
-    isAuth();
-    fetchCategories();
-    fetchMenus();
+    const init = async () => {
+      setAuthChecking(true);
+      await Promise.all([isAuth(), isAdminAuth()]);
+      setAuthChecking(false);
+
+      // Keep your existing initial loads
+      fetchCategories();
+      fetchMenus();
+    };
+
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch cart only when user is authenticated
   useEffect(() => {
-    if (user) {
-      fetchCartData();
-    } else {
-      setCart([]);
-    }
+    if (user) fetchCartData();
+    else setCart([]);
   }, [user]);
 
   const value = {
     navigate,
     loading,
     setLoading,
+
     user,
     setUser,
-    axios,
+
     admin,
     setAdmin,
+
+    // ✅ expose this
+    authChecking,
+
+    axios,
+
     categories,
     fetchCategories,
+
     menus,
     fetchMenus,
+
     addToCart,
     cartCount,
+
     cart,
     totalPrice,
     fetchCartData,
