@@ -26,3 +26,4 @@ dist-ssr
 
 #Text file
 *.txt
+.vercel
