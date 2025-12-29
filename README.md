@@ -1,16 +1,95 @@
-# React + Vite
+# BiteFlow 🍽️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack MERN restaurant application with a modern customer ordering experience and a secure admin panel for managing menus, categories, orders, and bookings. Built with React (Vite) on the frontend and Node.js/Express with MongoDB on the backend.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+### Customer (Public)
+- Browse restaurant menu and categories
+- View menu item details
+- Add items to cart and manage quantities
+- Checkout flow
+- Table booking
+- View My Orders
+- View My Bookings
+- Responsive UI for mobile, tablet, and desktop
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Admin Panel (Protected)
+- Admin authentication
+- Dashboard overview
+- Add / manage categories
+- Add / manage menu items
+- Manage customer orders
+- Manage table bookings
+- Secure API with HTTP-only cookies (JWT)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧰 Tech Stack
+
+**Frontend**
+- React (Vite)
+- React Router DOM
+- Axios
+- Tailwind CSS
+- React Hot Toast
+- Lucide Icons
+
+**Backend**
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT Authentication (HTTP-only cookie)
+- CORS configured for secure cross-origin requests
+- Multer / Upload route support (if enabled)
+
+---
+
+## 📁 Project Structure
+
+```bash
+BiteFlow/
+├── client/                 # Frontend (Vite + React)
+│   ├── src/
+│   ├── public/
+│   ├── .env
+│   └── package.json
+└── server/                 # Backend (Express + MongoDB)
+    ├── api/                # Vercel serverless entry (api/index.js)
+    ├── config/
+    ├── controllers/
+    ├── cors/
+    ├── middlewares/
+    ├── models/
+    ├── routes/
+    ├── app.js
+    ├── server.js
+    ├── vercel.json
+    ├── .env
+    └── package.json
+
+
+🚀 Live Links
+
+Client: https://biteflow-client.vercel.app 
+
+Server: https://biteflow-server.vercel.app\
+
+🔐 Authentication Notes
+
+Uses JWT stored in HTTP-only cookie
+
+Axios uses withCredentials: true for cookie-based authentication
+
+CORS is configured to allow credentials and whitelisted origins
+
+Admin session restore supported via /api/auth/is-admin-auth
+
+
+👤 Author
+
+Md. Jakir Hossain
+GitHub: https://github.com/Jakirhossain80 
+LinkedIn: https://www.linkedin.com/in/jakir-hossain-dev
