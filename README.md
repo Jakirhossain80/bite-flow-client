@@ -75,7 +75,7 @@ BiteFlow/
 
 Client: https://biteflow-client.vercel.app 
 
-Server: https://biteflow-server.vercel.app\
+Server: https://biteflow-server.vercel.app
 
 🔐 Authentication Notes
 
